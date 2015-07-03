@@ -5,6 +5,7 @@ import uuid
 import sys
 import md5
 import os.path
+import time
 
 from lib.sqlmapapiwrapper import SqlmapAPIWrapper
 from lib.proxy2 import ProxyRequestHandler, ThreadingHTTPServer
@@ -22,7 +23,11 @@ class myproxy(ProxyRequestHandler):
 			return False
 
 	def make_sig(self, url):
-		return md5.md5(urlparse.urlparse(url).hostname+''.join(sorted(urlparse.parse_qs(url).keys()))).hexdigest()
+		'''
+		hostname+path+querykey
+		'''
+		parse = urlparse.urlparse(url)
+		return md5.md5(parse.hostname+parse.path+''.join(sorted(urlparse.parse_qs(parse.query).keys()))).hexdigest()
 
 	def save_handler(self, req, req_body, res, res_body):
 		#check res.status
@@ -59,21 +64,8 @@ class myproxy(ProxyRequestHandler):
 
 		i = SqlmapAPIWrapper(fname)
 		if i.scan_start():
-			config.queue.put((fname,i.taskid,req.path))
+			config.queue.put((fname,i.taskid,req.path,time.time()))
 
-	def run(self, port=8888, host='127.0.0.1'):
-		server_address = ('', port)
-
-		HandlerClass = myproxy
-		ServerClass = ThreadingHTTPServer
-		protocol="HTTP/1.1"
-
-		HandlerClass.protocol_version = protocol
-		httpd = ServerClass(server_address, HandlerClass)
-
-		sa = httpd.socket.getsockname()
-		print "Serving HTTP Proxy on", sa[0], "port", sa[1], "..."
-		httpd.serve_forever()
 		
 if __name__ == '__main__':
 	if sys.argv[1:]:

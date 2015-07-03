@@ -178,8 +178,7 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(res_body)
         self.wfile.flush()
 
-        with self.lock:
-            self.save_handler(req, req_body, res, res_body_plain)
+        self.save_handler(req, req_body, res, res_body_plain)
 
     do_HEAD = do_GET
     do_POST = do_GET

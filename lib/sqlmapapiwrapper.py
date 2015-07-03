@@ -72,6 +72,6 @@ class SqlmapAPIWrapper():
 		os.remove(self.filepath)
 
 	def clear(self):
-		self.delete()
+		self.scan_stop()
 		self.delete_file()
 

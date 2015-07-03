@@ -30,7 +30,7 @@ def TestSqlmapAPI():
 		return False
 
 def RunProxy():
-	server_address = (config.proxy_host, config.proxy_port)
+	server_address = ('', config.proxy_port)
 
 	HandlerClass = myproxy.myproxy
 	ServerClass = ThreadingHTTPServer

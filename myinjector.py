@@ -14,12 +14,15 @@ class myinjector():
 	def run(self):
 		while True:
 			try:
-				(fname,taskid,url) = config.queue.get(timeout=1)
+				(fname,taskid,url,start_time) = config.queue.get(timeout=1)
 				injector = SqlmapAPIWrapper(fname)
 				injector.settaskid(taskid)
 
 				if not injector.terminal():
-					config.queue.put((fname,taskid,url))
+					if time.time()-start_time>config.sqlmap_tasktimeout:
+						injector.clear()
+						continue
+					config.queue.put((fname,taskid,url,start_time))
 					time.sleep(3)
 					continue
 
