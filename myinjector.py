@@ -37,3 +37,5 @@ class myinjector():
 				time.sleep(3)
 			except KeyboardInterrupt:
 				return
+			except:
+				continue
